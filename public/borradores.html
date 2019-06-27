@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Borradores</title>
+    <link rel="stylesheet" href="plugins/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>
+                    Borradores
+                </h5>
+
+                <hr>
+
+            </div>
+            <div class="col-md-8">
+                <h4>Borradores</h4>
+                <table class="table">
+                    <thead>
+                        <th></th>
+                        <th>Asunto</th>
+                    </thead>
+                    <tbody id="emails">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="plugins/jquery.min.js"></script>
+    <script src="plugins/popper.min.js"></script>
+    <script src="plugins/bootstrap.min.js"></script>
+    <script src="plugins/axios.min.js"></script>
+
+    <script>
+        if(!localStorage.getItem("user")){
+            location.href ="index.html"
+        }
+
+        axios.get(`/api/mail/sended/${localStorage.getItem("user")}/0`).then(resp => {
+
+           let emails = resp.data.emails;
+           let rows;
+           for(let i=0; i<emails.length; i++){            
+                rows+= `<tr>
+                    <td></td>
+                    <td>
+                    ${emails[i].asunto}</td>
+                    <td>
+                    
+                    </td>
+                </tr>`;
+           }
+           $('#emails').html(rows);
+        })
+
+    </script>
+    
+</body>
+</html>

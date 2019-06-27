@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Programa Inicial</title>
+    <link rel="stylesheet" href="plugins/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <input type="text" name="u" id="u" placeholder="Ingrese nombre de usuario">
+                <br>
+                <input type="file" name="file" id="file" placeholder="Seleccione Avatar">
+                <button onclick="login()">Ingresar</button>
+                
+            </div>
+        </div>
+
+    </div>
+
+
+
+   <!-- <div>
+        <div class="result">
+            
+        </div>
+        <form id="uploadFile" class="form-inline" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="file" id="file" class="form-control-file" required>
+            </div>
+            <div class="form-group ml-3">
+                <button class="btn btn-primary" type="submit">Subir Archivo</button>
+            </div>
+        </form>        
+    </div>-->
+
+    <script src="plugins/jquery.min.js"></script>
+    <script src="plugins/popper.min.js"></script>
+    <script src="plugins/bootstrap.min.js"></script>
+    <script src="plugins/axios.min.js"></script>
+
+    <!-- <script src="socket.io/socket.io.js"></script>
+    <script src="js/socket.js"></script> -->
+    <script src="js/http.js"></script>
+    <script>
+        function login(){
+            let u = $('#u').val();
+
+            if(!u) alert("ingrese un usuario")
+        
+
+            // subimos imagen
+            let formData = new FormData();
+            let imagefile = document.querySelector('#file');
+            formData.append("file", imagefile.files[0]);
+            formData.append("name", u);
+
+            axios.post('/avatar', formData ).then(resp => {        
+                if( resp.data.file){ 
+                    localStorage.setItem("user", u);            
+                    location.href = "inbox.html"      
+                }
+                console.log(resp.data);    
+            }).catch( err => {
+                console.log(err.response);
+                $('.result').html(err.response.data.message)
+            })
+
+
+           
+        }
+    </script>
+</body>
+</html>

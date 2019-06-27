@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Inbox</title>
+    <link rel="stylesheet" href="plugins/bootstrap.min.css">
+    <style>
+        .hovered button{
+            display: none;
+        }
+        .hovered:hover button {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div id="avatar">
+                   
+                </div>
+                <h5>                    
+                    Inbox   <button onclick="logout()">Cerrar Sesion</button>
+                </h5>
+
+                <hr>
+                <ul>
+                    <li><a href="enviar.html">Redactar</a></li>
+                    <li><a href="inbox.html">Inbox</a></li>
+                    <li><a href="enviados.html">Enviados</a></li>
+                    <li><a href="borradores.html">Borradores</a></li>
+                    <li><a href="papelera.html">Papelera</a></li>
+                </ul>
+            </div>
+            <div class="col-md-8">
+                <h4>Correos Recibidos</h4>
+                <table class="table">
+                    <thead>
+                        <th></th>
+                        <th>Asunto</th>
+                        <th>Contenido</th>       
+                        <th>Adjunto</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </thead>
+                    <tbody id="emails">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="plugins/jquery.min.js"></script>
+    <script src="plugins/popper.min.js"></script>
+    <script src="plugins/bootstrap.min.js"></script>
+    <script src="plugins/axios.min.js"></script>
+
+    <script>
+        if(!localStorage.getItem("user")){
+            location.href ="index.html"
+        }
+
+        $("#avatar").html(`<img src="files/${localStorage.getItem("user")}.jpg" alt="" width="50px">`)
+
+        axios.get(`/api/mail/${localStorage.getItem("user")}`).then(resp => {
+
+           let emails = resp.data.emails;
+           if(emails === undefined){
+            $('#emails').html("<tr><td colspan='4'>No tienes mensajes nuevos</td></tr>");
+               return;
+           }
+           let rows;
+           for(let i=0; i<emails.length; i++){
+                let img = `<td>Ninguno</td>`;
+                if(emails[i].extrainfo !== null && emails[i].extrainfo!=="")
+                    img = `<td><img src="files/${emails[i].extrainfo}" width="50px" /></td> `;
+            
+                rows+= `<tr class="hovered">
+                    <td>
+                        <input type="checkbox" id="msg_${emails[i].id}" value="${emails[i].id}">
+                    </td>
+                    
+                    <td>${emails[i].asunto}</td>
+                    <td>${emails[i].contenido}</td>
+                    ${img}
+                    <td>${ (emails[i].leido === true ? 'leido': 'no leido') }</td>
+                    <td>
+                        <button onclick="papelera('${emails[i].id}')">Papelera</button>
+                        <button onclick="noleido('${emails[i].id}')">No leido</button>
+                        <button onclick="eliminar('${emails[i].id}')">Eliminar</button>
+                    </td>
+                </tr>`;
+           }
+           $('#emails').html(rows);
+        })
+
+        function logout(){
+            localStorage.removeItem("user");
+            location.href = "index.html"
+        }
+
+        function eliminar(id){
+            if(!confirm("Realmente desea eliminar el mensaje?"))
+                return;
+            axios.put(`/api/mail/destroy/${id}`).then( resp => {
+                
+                location.reload();
+            })
+        }
+
+        function noleido(id){
+            axios.put(`/api/mail/readed/${id}`).then( resp => {
+                
+                location.reload();
+            })
+           
+        }
+
+        function papelera(id){
+            axios.put(`/api/mail/delete/${id}/-1`).then( resp => {
+                location.reload();
+            })
+        }
+
+    </script>
+    
+</body>
+</html>

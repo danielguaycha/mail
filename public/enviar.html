@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Enviados</title>
+    <link rel="stylesheet" href="plugins/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h5>
+                    Enviar Correo
+                </h5>
+
+                <hr>
+
+                <form id="formEnviar">
+                    <input type="text" name="receptor" id="receptor" placeholder="Receptor" class="form-control">
+                    <input type="text" name="asunto" id="asunto" class="form-control" placeholder="Asunto">
+                    <textarea name="contenido" id="contenido" cols="30" rows="10" class="form-control" placeholder="Contenido"></textarea>
+                    <input type="file" id="file" name="file" class="form-control">
+                    <br>
+                    <button>Enviar</button>
+                    <button type="button" onclick="cancel()">Cancelar</button>
+                </form>
+
+            </div>
+          
+        </div>
+    </div>
+    
+
+    <script src="plugins/jquery.min.js"></script>
+    <script src="plugins/popper.min.js"></script>
+    <script src="plugins/bootstrap.min.js"></script>
+    <script src="plugins/axios.min.js"></script>
+
+    <script>
+        if(!localStorage.getItem("user")){
+            location.href ="index.html"
+        }
+
+        $("#formEnviar").submit( function(e){
+            e.preventDefault();
+            let receptor = $("#receptor").val();
+            let asunto = $("#asunto").val();
+            let contenido = $("#contenido").val();
+            let emisor = localStorage.getItem("user");
+
+            let formData = new FormData();
+            let imagefile = document.querySelector('#file');
+            formData.append("file", imagefile.files[0]);
+            formData.append("receptor", receptor);
+            formData.append("asunto",asunto);
+            formData.append("contenido",contenido);
+            formData.append("emisor", emisor);
+           
+            
+
+            axios.post('/api/mail/1',  formData)
+                .then( resp => {
+                    if(resp.data.email){
+                        alert("Email enviado con exito");
+                        location.href = "enviados.html"
+                    }
+
+                })
+        });
+
+        function cancel(){
+            let receptor = $("#receptor").val();
+            let asunto = $("#asunto").val();
+            let contenido = $("#contenido").val();
+
+            if(!receptor || !asunto || !contenido){
+                alert("Completa el formulario")
+                return;
+            }
+
+            if(confirm("Desea enviar este mensaje a borradores?")){
+               
+
+                axios.post('/api/mail/0',  { receptor, asunto, contenido, emisor: localStorage.getItem("user") })
+                    .then( resp => {
+                        if(resp.data.email){
+                            alert("Email gurdado en Borradores");
+                            location.href = "borradores.html"
+                        }
+
+                })
+            }else{
+                location.reload();
+            }
+        }
+
+    </script>
+    
+</body>
+</html>

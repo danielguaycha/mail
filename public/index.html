@@ -10,15 +10,30 @@
 </head>
 
 <body>
-    <div class="container">
-
+    <div class="container mt-5">
+        
         <div class="row">
-            <div class="col-md-12">
-
-                <input type="text" name="u" id="u" placeholder="Ingrese nombre de usuario">
-                <br>
-                <input type="file" name="file" id="file" placeholder="Seleccione Avatar">
-                <button onclick="login()">Ingresar</button>
+            <div class="col-md-6 offset-3">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4>Email Login</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="">Nombre de Usuario</label>
+                            <input type="text" name="u" id="u" class="form-control" placeholder="Ingrese nombre de usuario">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Avatar:</label>
+                            <input type="file" name="file" id="file" class="form-control-file" placeholder="Seleccione Avatar">                
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button onclick="login()" class="btn btn-primary btn-block">Ingresar</button>
+                    </div>
+                </div>
+              
+                
                 
             </div>
         </div>
@@ -48,17 +63,22 @@
 
     <!-- <script src="socket.io/socket.io.js"></script>
     <script src="js/socket.js"></script> -->
-    <script src="js/http.js"></script>
     <script>
+        if(localStorage.getItem("user")){
+            location.href ="inbox.html"
+        }
         function login(){
             let u = $('#u').val();
 
-            if(!u) alert("ingrese un usuario")
-        
+            if(!u){alert("ingrese un usuario"); return;} 
+
+            let imagefile = document.querySelector('#file');
+
+            if(!imagefile.value) {alert("Seleccione un avatar"); return;}
 
             // subimos imagen
-            let formData = new FormData();
-            let imagefile = document.querySelector('#file');
+            console.log(`Enviando`);
+            let formData = new FormData();           
             formData.append("file", imagefile.files[0]);
             formData.append("name", u);
 

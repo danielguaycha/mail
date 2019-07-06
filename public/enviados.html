@@ -9,51 +9,109 @@
 </head>
 <body>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h5>
-                    Enviados
-                </h5>
-
-                <hr>
-
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+                <a class="navbar-brand" href="inbox.html">Email Simulator</a>
+                <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
+                    aria-expanded="false" aria-label="Toggle navigation"></button>
+                <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+                    <li class="nav-item">
+                        <div id="avatar"></div>
+                    </li>
+                </ul>
+                <button class="btn btn-secondary d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3" onclick="logout()">Cerrar</button>
+            </nav>
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-3">                            
+                        <div class="card">
+                            <div class="card-header">
+                              Bandeja de Salida
+                            </div>
+                            <ul class="list-group list-group-flush">                      
+                                <li class="list-group-item"><a class="btn btn-sm btn-danger btn-block" href="enviar.html">Redactar Nuevo</a></li>
+                                <li class="list-group-item"><a href="inbox.html">Inbox</a></li>
+                                <li class="list-group-item"><a href="enviados.html">Enviados</a></li>
+                                <li class="list-group-item"><a href="borradores.html">Borradores</a></li>
+                                <li class="list-group-item"><a href="papelera.html">Papelera</a></li>
+                            </ul>
+                        </div>
+                        <hr>
+                        <div class="card">
+                            <div class="card-header">
+                                Categorias
+                            </div>
+                            <ul class="list-group list-group-flush" id="categorias">        
+                               
+                            </ul>
+                            <div class="card-footer">
+                                <button class="btn btn-sm btn-secondary btn-block" onclick="addCategory()">Agregar</button>
+                            </div>
+                        </div>            
+                    </div>
+                    <div class="col-md-9 p-0 m-0">
+                        <div class="card">
+                            <div class="card-header">
+                                    Correos Enviados
+                            </div>
+                            <div class="card-body">
+                                
+                                <table class="table">
+                                        <thead>
+                                            <th></th>
+                                            <th>Asunto</th>
+                                            <th>Contenido</th>       
+                                            <th>Adjunto</th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody id="emails">
+                                            
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                       
+                    </div>
+                </div>
             </div>
-            <div class="col-md-8">
-                <h4>Correos Enviados</h4>
-                <table class="table">
-                    <thead>
-                        <th></th>
-                        <th>Asunto</th>
-                    </thead>
-                    <tbody id="emails">
-                        
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
     
 
     <script src="plugins/jquery.min.js"></script>
     <script src="plugins/popper.min.js"></script>
     <script src="plugins/bootstrap.min.js"></script>
     <script src="plugins/axios.min.js"></script>
-
-    <script>
-        if(!localStorage.getItem("user")){
-            location.href ="index.html"
-        }
+    <script src="js/index.js"></script>
+    <script>        
 
         axios.get(`/api/mail/sended/${localStorage.getItem("user")}/1`).then(resp => {
+            let emails = resp.data.emails;
+            let rows;
 
-           let emails = resp.data.emails;
-           let rows;
-           for(let i=0; i<emails.length; i++){            
-                rows+= `<tr>
+            let cat = "";
+            for(let i=0; i<categ.length; i++){            
+                cat+= `<button class="dropdown-item" onclick="move( {id} , ${categ[i].value})">${categ[i].nombre}</button>`
+            }
+
+           for(let i=0; i<emails.length; i++){        
+                let img = `<td>Ninguno</td>`;
+                let catt = cat;
+                if(emails[i].extrainfo !== null && emails[i].extrainfo!=="")
+                    img = `<td><img class="img-rounded" src="files/${emails[i].extrainfo}" width="40px" /></td> `;    
+                rows+= `<tr class="hovered">
                     <td></td>
-                    <td>
-                    ${emails[i].asunto}</td>
+                    <td>${emails[i].asunto}</td>
+                    <td><small>${emails[i].contenido}</small></td>
+                    ${img} 
+                    <td class="d-flex">                                                                    
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Mover a:
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <button class="dropdown-item" onclick="eliminar('${emails[i].id}')">Eliminar</button>   
+                               ${catt.replaceAll("{id}", emails[i].id )}                           
+                            </div>
+                        </div>
+                    </td>
                 </tr>`;
            }
            $('#emails').html(rows);

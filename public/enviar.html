@@ -8,25 +8,75 @@
     <link rel="stylesheet" href="plugins/bootstrap.min.css">
 </head>
 <body>
-
-    <div class="container">
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <a class="navbar-brand" href="inbox.html">Email Simulator</a>
+        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
+            aria-expanded="false" aria-label="Toggle navigation"></button>
+        <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+            <li class="nav-item">
+                <div id="avatar"></div>
+            </li>
+        </ul>
+        <button class="btn btn-secondary d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3" onclick="logout()">Cerrar</button>
+    </nav>
+    <div class="container mt-4">
         <div class="row">
-            <div class="col-md-12">
-                <h5>
-                    Enviar Correo
-                </h5>
 
-                <hr>
+                <div class="col-md-3">                            
+                        <div class="card">
+                            <div class="card-header">
+                              Enviar Correo
+                            </div>
+                            <ul class="list-group list-group-flush">                                                      
+                                <li class="list-group-item"><a href="inbox.html">Inbox</a></li>
+                                <li class="list-group-item"><a href="enviados.html">Enviados</a></li>
+                                <li class="list-group-item"><a href="borradores.html">Borradores</a></li>
+                                <li class="list-group-item"><a href="papelera.html">Papelera</a></li>
+                            </ul>
+                        </div>
+                        <hr>
+                        <div class="card">
+                            <div class="card-header">
+                                Categorias
+                            </div>
+                            <ul class="list-group list-group-flush" id="categorias">        
+                                <li class="list-group-item">Categoria</li>
+                            </ul>
+                            <div class="card-footer">
+                                <button class="btn btn-sm btn-secondary btn-block">Agregar</button>
+                            </div>
+                        </div>            
+                    </div>
 
-                <form id="formEnviar">
-                    <input type="text" name="receptor" id="receptor" placeholder="Receptor" class="form-control">
-                    <input type="text" name="asunto" id="asunto" class="form-control" placeholder="Asunto">
-                    <textarea name="contenido" id="contenido" cols="30" rows="10" class="form-control" placeholder="Contenido"></textarea>
-                    <input type="file" id="file" name="file" class="form-control">
-                    <br>
-                    <button>Enviar</button>
-                    <button type="button" onclick="cancel()">Cancelar</button>
+            <div class="col-md-9">                
+                <form id="formEnviar" class="card">
+                    <div class="card-header">
+                            Redactar Correo
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="text" name="receptor" id="receptor" placeholder="Receptor" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="asunto" id="asunto" class="form-control" placeholder="Asunto">
+                        </div>
+                        <div class="form-group">
+                            <textarea name="contenido" id="contenido" cols="20" rows="5" class="form-control" placeholder="Contenido"></textarea>
+                        </div>                                    
+                        <div class="form-group">
+                            <label for="">Adjuntos</label>
+                            <input type="file" id="file" name="file" class="form-control-file">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                            <button class="btn btn-success">Enviar</button>
+                            <button class="btn btn-danger" type="button" onclick="cancel()">Cancelar</button>
+                    </div>
+                    
                 </form>
+                
+
+               
 
             </div>
           
@@ -38,7 +88,7 @@
     <script src="plugins/popper.min.js"></script>
     <script src="plugins/bootstrap.min.js"></script>
     <script src="plugins/axios.min.js"></script>
-
+    <script src="js/index.js"></script>
     <script>
         if(!localStorage.getItem("user")){
             location.href ="index.html"

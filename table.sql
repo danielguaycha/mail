@@ -9,3 +9,9 @@ create table emails (
 	"contenido" text,
 	"fecha" timestamp default CURRENT_DATE
 );
+
+create table categorias(
+	"id" serial not null primary key,
+	"nombre" varchar(100),
+	"value" int default 2
+)

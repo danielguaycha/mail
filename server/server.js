@@ -29,7 +29,9 @@ app.use('/api', require('./routes/emai'))
 sequelize.authenticate().then( () => {
     server.listen(port, (err) => {
         if (err) throw new Error(err);
-        console.log(`Servidor corriendo en puerto ${ port }`);
+        console.log(`Servidor corriendo en puerto ${ port }`);       
+        //let email = require('./controllers/sender');
+        //email.senderMail("daniel@mail.com", "danielguaycha@gmail.com", "Subject", "Donde esta !!!");
     });
 }).catch( err => {
     console.log(err);

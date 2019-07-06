@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Inbox</title>
+    <title>Categoría</title>
     <link rel="stylesheet" href="plugins/bootstrap.min.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
             <div class="col-md-3">                            
                 <div class="card">
                     <div class="card-header">
-                      Bandeja de Entrada
+                      <div class="categ1"></div>
                     </div>
                     <ul class="list-group list-group-flush">                      
                         <li class="list-group-item"><a class="btn btn-sm btn-danger btn-block" href="enviar.html">Redactar Nuevo</a></li>
@@ -38,7 +38,7 @@
                 <hr>
                 <div class="card">
                     <div class="card-header">
-                        Categorias
+                        Categoria 
                     </div>
                     <ul class="list-group list-group-flush" id="categorias">        
                         
@@ -51,7 +51,7 @@
             <div class="col-md-9 p-0 m-0">
                 <div class="card">
                     <div class="card-header">
-                            Correos Recibidos
+                        Categoria: <div class="categ d-inline-block"></div> 
                     </div>
                     <div class="card-body">
                         
@@ -82,53 +82,42 @@
     <script src="plugins/axios.min.js"></script>
     <script src="js/index.js"></script>
     <script>                
-        axios.get(`/api/mail/${localStorage.getItem("user")}`).then(resp => {
+        let id = getUrlParameter("id");                
+        let c = getUrlParameter("c");                
+        $('.categ').html(c)
+        $('.categ1').html(c)
+        axios.get(`/api/mail/all/${localStorage.getItem("user")}/${id}`).then(resp => {
 
            let emails = resp.data.emails;
            if(emails === undefined){
             $('#emails').html("<tr><td colspan='4'>No tienes mensajes nuevos</td></tr>");
                return;
            }
-
-           /*Categorias*/
-            let cat = "";
-            for(let i=0; i<categ.length; i++){            
-                cat+= `<button class="dropdown-item" onclick="move( {id} , ${categ[i].value})">${categ[i].nombre}</button>`
-            }
-
-
            let rows;
            for(let i=0; i<emails.length; i++){
                 let img = `<td>Ninguno</td>`;
                 if(emails[i].extrainfo !== null && emails[i].extrainfo!=="")
                     img = `<td><img class="img-rounded" src="files/${emails[i].extrainfo}" width="40px" /></td> `;
-                    let catt = cat;
-                    rows+= `<tr class="hovered">
-                        <td>
-                            <input type="checkbox" id="msg_${emails[i].id}" value="${emails[i].id}">
-                        </td>
-                        
-                        <td>${emails[i].asunto}</td>
-                        <td>${emails[i].contenido}</td>
-                        ${img}
-                        <td>${ (emails[i].leido === true ? 'leido': 'no leido') }</td>
-                        <td class="d-flex">                                                                    
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Acción:
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                     <button class="dropdown-item" onclick="papelera('${emails[i].id}')">Papelera</button>
-                                    <button class="dropdown-item" onclick="noleido('${emails[i].id}')">No leido</button>
-                                    <button class="dropdown-item" onclick="eliminar('${emails[i].id}')">Eliminar</button>
-                                    ${catt.replaceAll("{id}", emails[i].id )}                           
-                                </div>
-                            </div>
-                        </td>
-                    </tr>`;
+            
+                rows+= `<tr class="hovered">
+                    <td>
+                        <input type="checkbox" id="msg_${emails[i].id}" value="${emails[i].id}">
+                    </td>
+                    
+                    <td>${emails[i].asunto}</td>
+                    <td>${emails[i].contenido}</td>
+                    ${img}
+                    <td>${ (emails[i].leido === true ? 'leido': 'no leido') }</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="papelera('${emails[i].id}')">Papelera</button>
+                        <button class="btn btn-sm btn-primary" onclick="noleido('${emails[i].id}')">No leido</button>
+                        <button class="btn btn-sm btn-danger" onclick="eliminar('${emails[i].id}')">Eliminar</button>
+                    </td>
+                </tr>`;
            }
            $('#emails').html(rows);
         })        
+
     </script>
     
 </body>

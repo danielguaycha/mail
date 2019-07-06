@@ -1,4 +1,6 @@
 const Email = require('./../models/email');
+const Category = require('./../models/category');
+const mailController = require('./sender')
 
 // Enviar Email o Guardar como borrador
 async function sendEmail(req, res){
@@ -24,8 +26,12 @@ async function sendEmail(req, res){
         estado: estado,
         extrainfo: file
     }).then( (email) => {
+
+        mailController.senderMail(email.emisor, body.receptor, body.asunto, body.contenido);
+
         return res.status(200).send({ email })
     }).catch( err => {
+        console.log(err);
         return res.status(400).send({ err })
     })
 }
@@ -106,7 +112,6 @@ function listSendEmail(req, res){
     })
 }
 
-
 function deleteEmail(req, res){
     let id = req.params.id;
     let estado = req.params.estado;
@@ -116,6 +121,7 @@ function deleteEmail(req, res){
     Email.update({
         estado: estado
     }, { returning: true, where: { id: id } }).then( email => {
+        console.log(email);
         return res.status(200).send({ message: "Estado del mensaje cambiado"})
     })
 }
@@ -135,7 +141,6 @@ function readed(req, res){
 
 }
 
-
 function destroyEmail(req, res){
     let id = req.params.id;
     
@@ -151,7 +156,58 @@ function destroyEmail(req, res){
     })
 }
 
+async function addCategory(req, res){
+    let body = req.body;
+    if(!body.name){
+        return res.status(400).send({message:"Ingrese nombre de categoria"});
+    }
+
+    let value = await Category.max('value');
+    if(!value)
+        value = 1;
+
+    Category.create({
+        nombre: body.name,
+        value: value+1
+    }).then( category => {
+        return res.status(200).send({ category })
+    }).catch( err =>{
+        return res.status(400).send({message:"Error al guardar categoría", err});
+    })
+}
+
+function getCategory(req, res){
+    Category.findAll().then( categories => {
+        return res.status(200).send({ categories })
+    }).catch( err => {
+        return res.status(400).send({message:"Error al consultar categorías", err});
+    })
+}
+
+function getMails(req, res){
+    let user = req.params.u;
+    let estado = 1;
+
+    if(!user)
+        return res.status(404).send({ message: "Usuario no encontrado" })
+
+    if(req.params.estado)
+        estado = req.params.estado
+
+    Email.findAll({  where: { 
+        [Op.or]: [{receptor: user}, { emisor: user}],
+        [Op.and]: [{ estado: estado }]
+     } }).then( emails => {
+
+        if(!emails) return res.status(404).send({ message: "No existen mensajes" });
+        
+        if(emails.length === 0) return res.status(200).send({ message: "No tienes mensajes" });
+
+        return res.status(200).send({ emails })
+    })
+}
+
 
 module.exports = {
-    sendEmail, listRecvEmail, listSendEmail, deleteEmail, readed, destroyEmail
+    sendEmail, listRecvEmail, listSendEmail, deleteEmail, readed, destroyEmail, addCategory, getCategory, getMails
 }
